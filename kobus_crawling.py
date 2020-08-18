@@ -41,7 +41,7 @@ def main():
         sys.exit(1)
 
 
-    print("kobus start!!!")
+    #print("kobus start!!!")
     ###출발지,도착지,region 불러오기
     with open('./kobusTerminal/departures.json', 'r', encoding='utf-8') as json_file:
         departures = json.load(json_file)
@@ -70,6 +70,8 @@ def main():
     # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
     webdriver_options = webdriver.ChromeOptions()
     webdriver_options.add_argument('headless')
+    webdriver_options.add_argument('--no-sandbox')
+
 
     #---------------도착지 반복문 시작------------#
 

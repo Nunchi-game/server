@@ -33,19 +33,20 @@ def main():
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     options.add_argument("--window-size=1920,1080")
+    options.add_argument('--no-sandbox')
     driver = webdriver.Chrome('./chromedriver', chrome_options=options)
 
     # dept_list = [{"trml_Cd": "0511601", "trml_Nm": "동서울", "region" : "수도권"}]
-    ariv_list = [{"trml_Cd": "4773401", "trml_Nm": "부산동래", "region": "경남"}]
+    #ariv_list = [{"trml_Cd": "4773401", "trml_Nm": "부산동래", "region": "경남"}]
     with open('tmoneyTerminal/departTerm.json', 'r', encoding='utf-8') as json_file:
         dept_list = json.load(json_file)
-    #with open('tmoneyTerminal/arrivalTerm.json', 'r', encoding='utf-8') as json_file:
-    #    ariv_list = json.load(json_file)
+    with open('tmoneyTerminal/arrivalTerm.json', 'r', encoding='utf-8') as json_file:
+        ariv_list = json.load(json_file)
     ###현재 일자 폴더명 생성
     nowTime = datetime.datetime.now()
     date = nowTime.strftime('%m%d')
     directory = os.path.join(os.getcwd(), 'tmoney_data', 'tmoney'+date)
-    print(directory)
+    #print(directory)
     # -------------현재 날짜에 맞는 폴더 생성------------#
     # !!!!!!!!!!!!!!!!예외처리 해야됨 : 폴더명 중복, 파일 생성 오류 등등
     try:
@@ -66,13 +67,13 @@ def main():
             # 하나의 터미널에 대해서 해당 날의 전제 좌석, 예약 좌석, 잔여좌석 계산
             left = 0
             total = 0
-            print('도착 터미널 : ' + ariv_term['trml_Nm'])
+            #print('도착 터미널 : ' + ariv_term['trml_Nm'])
             for dept_term in dept_list:
                 driver.get("https://txbus.t-money.co.kr/main.do")
                 time.sleep(3)
                 addDeptTrmlInfo = 'addTrmlInfo("01", "' + dept_term['trml_Nm'] + '", "' + dept_term[
                     'trml_Cd'] + '")'  ##출발지 선택 javascript 함수
-                print('출발 터미널 : ' + dept_term['trml_Nm'])
+                #print('출발 터미널 : ' + dept_term['trml_Nm'])
                 driver.execute_script(addDeptTrmlInfo)
                 try:  # 경고창이 뜨는 지 확인
                     alert = driver.switch_to_alert()
@@ -106,7 +107,7 @@ def main():
             new_terminal_row = pd.Series([ariv_term['trml_Nm'], total, left, total - left, ariv_term['region']],
                                          index=columnNames)  # [터미널, 전체좌석, 예약좌석, 잔여좌석]
             seatState = seatState.append(new_terminal_row, ignore_index=True)
-            print(ariv_term['trml_Nm'] + 'is finished')
+            #print(ariv_term['trml_Nm'] + 'is finished')
             # time.sleep(2)
         ##-----도착지 반복문 ------##
     except Exception as e:
