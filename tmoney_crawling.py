@@ -5,9 +5,30 @@ import json
 import datetime
 import pandas as pd
 import os
+
+#data frame MySQL insert.
+import pymysql
+#get log
+import logging
+
+from sqlalchemy import create_engine
+
+# MySQL Connector using pymysql
+pymysql.install_as_MySQLdb()
+import MySQLdb
 ##출발지, 도착지 json file 읽기
 
 def main():
+    try:
+        engine = create_engine(
+            "mysql+mysqldb://root:nunchi@220.67.128.71:3306/nunchi",
+            encoding='utf-8')
+        conn = engine.connect()
+
+    except:
+        logging.error("cannot connect database")
+        sys.exit(1)
+
     print("tbus start!!!!")
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
@@ -15,11 +36,11 @@ def main():
     driver = webdriver.Chrome('./chromedriver', chrome_options=options)
 
     # dept_list = [{"trml_Cd": "0511601", "trml_Nm": "동서울", "region" : "수도권"}]
-    #ariv_list = [{"trml_Cd": "4773401", "trml_Nm": "부산동래", "region": "경남"}]
+    ariv_list = [{"trml_Cd": "4773401", "trml_Nm": "부산동래", "region": "경남"}]
     with open('tmoneyTerminal/departTerm.json', 'r', encoding='utf-8') as json_file:
         dept_list = json.load(json_file)
-    with open('tmoneyTerminal/arrivalTerm.json', 'r', encoding='utf-8') as json_file:
-        ariv_list = json.load(json_file)
+    #with open('tmoneyTerminal/arrivalTerm.json', 'r', encoding='utf-8') as json_file:
+    #    ariv_list = json.load(json_file)
     ###현재 일자 폴더명 생성
     nowTime = datetime.datetime.now()
     date = nowTime.strftime('%m%d')
@@ -93,10 +114,15 @@ def main():
     finally:
         driver.close()
         driver.quit()
-    seatState.to_csv(directory + '/' + 'result.csv', encoding='utf-8')
-    with open(directory + '/' + 'api_result.json', 'w', encoding='utf-8') as api_result:
-        seatState.to_json(api_result, orient='table', force_ascii=False)
+    #seatState.to_csv(directory + '/' + 'result.csv', encoding='utf-8')
 
+    #dataframe to database
+    seatState.to_sql(name="tmoneybus_result", con=engine, if_exists='append', index=False)
+
+    #with open(directory + '/' + 'api_result.json', 'w', encoding='utf-8') as api_result:
+    #   seatState.to_json(api_result, orient='table', force_ascii=False)
+    conn.close()
+    engine.dispose()
 
 if __name__=='__main__':
     main()

@@ -9,6 +9,17 @@ import os
 import datetime
 #json 파일 형식으로 df 저장하기 위해서
 import json
+#data frame MySQL insert.
+import pymysql
+#get log
+import logging
+
+from sqlalchemy import create_engine
+
+# MySQL Connector using pymysql
+pymysql.install_as_MySQLdb()
+import MySQLdb
+
 
 class DepartureTime(object):
     def __init__(self,departureTime):
@@ -19,6 +30,16 @@ class DepartureTime(object):
         return self.departureTime
 
 def main():
+    try:
+        engine = create_engine(
+            "mysql+mysqldb://root:nunchi@220.67.128.71:3306/nunchi",
+            encoding='utf-8')
+        conn = engine.connect()
+
+    except:
+        logging.error("cannot connect database")
+        sys.exit(1)
+
 
     print("kobus start!!!")
     ###출발지,도착지,region 불러오기
@@ -114,12 +135,11 @@ def main():
                 timeTable = timeTable.append(new_row,ignore_index=True)
                 stage+=1
         #---------------출발지 반복문 종료------------#
-
         #---------------문자형 column numeric으로 변경------------#
         timeTable['total_seat']=pd.to_numeric(timeTable['total_seat'])
         timeTable['remain_seat']=pd.to_numeric(timeTable['remain_seat'])
-        csvName = arrival+date+'.csv'
-        timeTable.to_csv('./kobus_data/'+fileName+'/'+csvName,encoding='utf-8')
+        #csvName = arrival+date+'.csv'
+        #timeTable.to_csv('./kobus_data/'+fileName+'/'+csvName,encoding='utf-8')
         #---------------json파일 저장을 위한 전처리, json------------#
         result_total = timeTable['total_seat'].sum()
         result_remain = timeTable['remain_seat'].sum()
@@ -129,9 +149,13 @@ def main():
         resultTable = resultTable.append(new_result,ignore_index=True)
         #출발지 반복문 하나씩 돌 때마다 resultTable에 row 하나씩 추가해야 한다.근데 이거 이렇게 해야되나?
 
+    # resultTable dataframe to database
+    resultTable.to_sql(name="kobus_result", con=engine, if_exists='append', index=False)
     #이중 반복문 탈출한 뒤 result.json 저장하기
-    resultName = 'result'+date+'.json'
-    with open('./kobus_data/'+fileName+'/'+resultName, 'w', encoding='utf-8') as file:
-        resultTable.to_json(file, orient='table', force_ascii=False)
+#    resultName = 'result'+date+'.json'
+#    with open('./kobus_data/'+fileName+'/'+resultName, 'w', encoding='utf-8') as file:
+#        resultTable.to_json(file, orient='table', force_ascii=False)
+    conn.close()
+    engine.dispose()
 if __name__=='__main__':
     main()

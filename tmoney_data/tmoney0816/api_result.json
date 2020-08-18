@@ -1,1 +1,0 @@
-{"schema":{"fields":[{"name":"index","type":"integer"},{"name":"arrival","type":"string"},{"name":"total","type":"string"},{"name":"remain","type":"string"},{"name":"reserved","type":"string"},{"name":"region","type":"string"}],"primaryKey":["index"],"pandas_version":"0.20.0"},"data":[{"index":0,"arrival":"부산동래","total":646,"remain":646,"reserved":0,"region":"경남"}]}
