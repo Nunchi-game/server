@@ -83,7 +83,7 @@ def main():
 
         #---------------출발지 반복문 시작------------#
         for key, value in departures.items():
-            print("kobus new departure start!")
+            #print("kobus new departure start!")
             ###크롬 드라이버 실행,페이지 불러옴
             driver = webdriver.Chrome("./chromedriver", options=webdriver_options)
             driver.get("https://www.kobus.co.kr/oprninf/alcninqr/oprnAlcnPage.do")
@@ -153,6 +153,7 @@ def main():
 
     # resultTable dataframe to database
     resultTable.to_sql(name="kobus_result", con=engine, if_exists='append', index=False)
+        #sys.exit(1)
     #이중 반복문 탈출한 뒤 result.json 저장하기
 #    resultName = 'result'+date+'.json'
 #    with open('./kobus_data/'+fileName+'/'+resultName, 'w', encoding='utf-8') as file:

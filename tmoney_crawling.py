@@ -29,7 +29,7 @@ def main():
         logging.error("cannot connect database")
         sys.exit(1)
 
-    print("tbus start!!!!")
+    #print("tbus start!!!!")
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     options.add_argument("--window-size=1920,1080")
