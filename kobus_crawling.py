@@ -41,7 +41,7 @@ def main():
         sys.exit(1)
 
 
-    #print("kobus start!!!")
+    print("kobus start!!!")
     ###출발지,도착지,region 불러오기
     with open('./kobusTerminal/departures.json', 'r', encoding='utf-8') as json_file:
         departures = json.load(json_file)
@@ -58,11 +58,11 @@ def main():
     fileName = 'kobus'+date
     #-------------현재 날자에 맞는 폴더 kobus_data 폴더에 생성,------------#
     #!!!!!!!!!!!!!!!!예외처리 해야됨 : 폴더명 중복, 파일 생성 오류 등등
-    try:
-        if not os.path.exists('./kobus_data/'+fileName):
-            os.mkdir('./kobus_data/'+fileName)
-    except:
-        print("Failed to create directory!")
+    #try:
+    #    if not os.path.exists('./kobus_data/'+fileName):
+    #        os.mkdir('./kobus_data/'+fileName)
+    #except:
+    #    print("Failed to create directory!")
 
     #------------------result.json용 데이터프레임 생성----------------#
     resultTable = pd.DataFrame(columns=['arrival','total','remain','reserved','region'])
@@ -83,7 +83,7 @@ def main():
 
         #---------------출발지 반복문 시작------------#
         for key, value in departures.items():
-            #print("kobus new departure start!")
+            print("kobus new departure start!")
             ###크롬 드라이버 실행,페이지 불러옴
             driver = webdriver.Chrome("./chromedriver", options=webdriver_options)
             driver.get("https://www.kobus.co.kr/oprninf/alcninqr/oprnAlcnPage.do")

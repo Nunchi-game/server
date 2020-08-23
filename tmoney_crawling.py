@@ -29,7 +29,7 @@ def main():
         logging.error("cannot connect database")
         sys.exit(1)
 
-    #print("tbus start!!!!")
+    print("tbus start!!!!")
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     options.add_argument("--window-size=1920,1080")
@@ -49,11 +49,11 @@ def main():
     #print(directory)
     # -------------현재 날짜에 맞는 폴더 생성------------#
     # !!!!!!!!!!!!!!!!예외처리 해야됨 : 폴더명 중복, 파일 생성 오류 등등
-    try:
-        if not os.path.exists(directory):
-            os.mkdir(directory)
-    except:
-        print("Failed to create directory!")
+    #try:
+    #    if not os.path.exists(directory):
+    #        os.mkdir(directory)
+    #except:
+    #    print("Failed to create directory!")
     columnNames = ['arrival', 'total', 'remain', 'reserved', 'region']
     seatState = pd.DataFrame(columns=columnNames)
 
@@ -107,7 +107,7 @@ def main():
             new_terminal_row = pd.Series([ariv_term['trml_Nm'], total, left, total - left, ariv_term['region']],
                                          index=columnNames)  # [터미널, 전체좌석, 예약좌석, 잔여좌석]
             seatState = seatState.append(new_terminal_row, ignore_index=True)
-            #print(ariv_term['trml_Nm'] + 'is finished')
+            print(ariv_term['trml_Nm'] + 'is finished')
             # time.sleep(2)
         ##-----도착지 반복문 ------##
     except Exception as e:
