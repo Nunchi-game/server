@@ -54,7 +54,7 @@ def main():
     #        os.mkdir(directory)
     #except:
     #    print("Failed to create directory!")
-    columnNames = ['arrival', 'total', 'remain', 'reserved', 'region']
+    columnNames = ['arrival', 'total', 'remain', 'reserved', 'city']
     seatState = pd.DataFrame(columns=columnNames)
 
     ##도착지 터미널 반복문
@@ -104,7 +104,7 @@ def main():
                 time.sleep(1)
             ###----출발지 반복문----###
 
-            new_terminal_row = pd.Series([ariv_term['trml_Nm'], total, left, total - left, ariv_term['region']],
+            new_terminal_row = pd.Series([ariv_term['trml_Nm'], total, left, total - left, ariv_term['city']],
                                          index=columnNames)  # [터미널, 전체좌석, 예약좌석, 잔여좌석]
             seatState = seatState.append(new_terminal_row, ignore_index=True)
             print(ariv_term['trml_Nm'] + 'is finished')

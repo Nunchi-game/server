@@ -65,7 +65,7 @@ def main():
     #    print("Failed to create directory!")
 
     #------------------result.json용 데이터프레임 생성----------------#
-    resultTable = pd.DataFrame(columns=['arrival','total','remain','reserved','region'])
+    resultTable = pd.DataFrame(columns=['arrival','total','remain','reserved','city'])
 
     # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
     webdriver_options = webdriver.ChromeOptions()
@@ -147,7 +147,7 @@ def main():
         result_remain = timeTable['remain_seat'].sum()
         result_reserved = result_total - result_remain
         result_region = regions[arrival]
-        new_result = pd.Series([arrival,result_total,result_remain,result_reserved,result_region],index=['arrival','total','remain','reserved','region'])
+        new_result = pd.Series([arrival,result_total,result_remain,result_reserved,result_region],index=['arrival','total','remain','reserved','city'])
         resultTable = resultTable.append(new_result,ignore_index=True)
         #출발지 반복문 하나씩 돌 때마다 resultTable에 row 하나씩 추가해야 한다.근데 이거 이렇게 해야되나?
 

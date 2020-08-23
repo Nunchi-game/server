@@ -1,3 +1,5 @@
+import decimal
+
 from flask import Flask
 from flask import request
 import json
@@ -7,8 +9,16 @@ import pymysql
 import logging
 import sys
 from datetime import datetime
+from decimal import Decimal
 
 from apscheduler.schedulers.background import BackgroundScheduler
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, o):
+        if isinstance(o, decimal.Decimal):
+            return float(o)
+        return super(DecimalEncoder, self).default(o)
+
 
 app = Flask(__name__)
 
@@ -52,8 +62,8 @@ def getKobusResult():
         # return now date
         nowDate = datetime.today().strftime("%Y-%m-%d")
         nowDate += "%"
-        sql = "SELECT id, arrival, total, remain, reserved, region FROM nunchi.kobus_result WHERE created_at LIKE %s"
-        cursor.execute(sql, nowDate)
+        #sql = "SELECT id, arrival, total, remain, reserved, region FROM nunchi.kobus_result WHERE created_at LIKE %s"
+        #cursor.execute(sql, nowDate)
         row_headers = [x[0] for x in cursor.description]
         rv = cursor.fetchall()
         json_data = []
@@ -83,8 +93,8 @@ def getTmoneybusResult():
         # return now date
         nowDate = datetime.today().strftime("%Y-%m-%d")
         nowDate += "%"
-        sql = "SELECT id, arrival, total, remain, reserved, region FROM nunchi.tmoneybus_result WHERE created_at LIKE %s"
-        cursor.execute(sql, nowDate)
+        #sql = "SELECT id, arrival, total, remain, reserved, region FROM nunchi.tmoneybus_result WHERE created_at LIKE %s"
+        #cursor.execute(sql, nowDate)
         row_headers = [x[0] for x in cursor.description]
         rv = cursor.fetchall()
         json_data = []
@@ -100,36 +110,46 @@ def getTmoneybusResult():
 
 def groupByRegion(database):
     try:
-       # database = "nunchi."+database
         conn = pymysql.connect(host="220.67.128.71", user="root", passwd="nunchi", db="nunchi", port=3306,
                                use_unicode=True,
                                charset='utf8')
         cursor = conn.cursor()
+        cursor.execute("USE nunchi")
     except:
         logging.error("could not connect to rds")
         sys.exit(1)
 
     nowDate = datetime.today().strftime("%Y-%m-%d")
     nowDate += "%"
-    sql = "SELECT SUM(reserved) AS reserved , region FROM %s WHERE created_at LIKE %s GROUP BY region"
-    cursor.execute(sql, (database, nowDate))
-    row_headers = [x[0] for x in cursor.description]
-    rv = cursor.fetchall()
-    json_data = []
-    for result in rv:
-        json_data.append(dict(zip(row_headers, result)))
+    nowDate = "2020-08-20%"
+    try:
+        query = "SELECT SUM(reserved) AS reserved , city FROM %s WHERE created_at LIKE %%s GROUP BY city" % database
+        cursor.execute(query, nowDate)
+        # query = "SELECT total, city FROM kobus_result"
+        # cursor.execute(query)
+        data = json.dumps(cursor.fetchall(), cls=DecimalEncoder)
+        conn.commit()
+        cursor.close()
+        return data
+    except Exception as e:
+        conn.commit()
+        cursor.close()
+        print(e)
 
-    conn.commit()
-    cursor.close()
-    return json.dumps(json_data)
 
 # bus tmoneyData 불러오기.
 @app.route('/api/bus', methods = ['GET'])
 def getBusData():
-    kobusData = groupByRegion('kobus_result')
-    tmoneybusData = groupByRegion('tmoneybus_result')
-    print(kobusData)
-    print(tmoneybusData)
+    try:
+        kobusData = groupByRegion('kobus_result')
+        tmoneybusData = groupByRegion('tmoneybus_result')
+        busResult = {}
+        for data in kobusData:
+            busResult.data[0]
+
+        return {'StatusCode': '200', 'Message': 'Get bus result success', 'data': kobusData}
+    except:
+        return {'StatusCode': '400', 'Message': 'Get bus result fail'}
 
 '''
 # car tmoneyData 불러오기.
