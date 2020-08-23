@@ -54,7 +54,7 @@ def main():
     #        os.mkdir(directory)
     #except:
     #    print("Failed to create directory!")
-    columnNames = ['arrival', 'total', 'remain', 'reserved', 'region']
+    columnNames = ['arrival', 'total', 'remain', 'reserved', 'city']
     seatState = pd.DataFrame(columns=columnNames)
 
     ##도착지 터미널 반복문

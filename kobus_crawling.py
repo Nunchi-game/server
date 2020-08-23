@@ -53,9 +53,9 @@ def main():
         regions = json.load(json_file)
 
     ###현재 일자 폴더명 생성(%H지움)
-    nowTime = datetime.datetime.now()
-    date = nowTime.strftime('%m%d')
-    fileName = 'kobus'+date
+    # nowTime = datetime.datetime.now()
+    # date = nowTime.strftime('%m%d')
+    # fileName = 'kobus'+date
     #-------------현재 날자에 맞는 폴더 kobus_data 폴더에 생성,------------#
     #!!!!!!!!!!!!!!!!예외처리 해야됨 : 폴더명 중복, 파일 생성 오류 등등
     #try:
@@ -65,7 +65,7 @@ def main():
     #    print("Failed to create directory!")
 
     #------------------result.json용 데이터프레임 생성----------------#
-    resultTable = pd.DataFrame(columns=['arrival','total','remain','reserved','region'])
+    resultTable = pd.DataFrame(columns=['arrival','total','remain','reserved','city'])
 
     # webdirver옵션에서 headless기능을 사용하겠다 라는 내용
     webdriver_options = webdriver.ChromeOptions()
@@ -87,7 +87,7 @@ def main():
             ###크롬 드라이버 실행,페이지 불러옴
             driver = webdriver.Chrome("./chromedriver", options=webdriver_options)
             driver.get("https://www.kobus.co.kr/oprninf/alcninqr/oprnAlcnPage.do")
-            time.sleep(1)
+            time.sleep(3)
 
             #코드 실행해서 출발지, 목적지 선택
             fnDeprChc = 'fnDeprChc("'+ value +'","'+ key +'")'
