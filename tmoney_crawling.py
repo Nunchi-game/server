@@ -73,7 +73,7 @@ def main():
                 time.sleep(3)
                 addDeptTrmlInfo = 'addTrmlInfo("01", "' + dept_term['trml_Nm'] + '", "' + dept_term[
                     'trml_Cd'] + '")'  ##출발지 선택 javascript 함수
-                #print('출발 터미널 : ' + dept_term['trml_Nm'])
+                print('출발 터미널 : ' + dept_term['trml_Nm'])
                 driver.execute_script(addDeptTrmlInfo)
                 try:  # 경고창이 뜨는 지 확인
                     alert = driver.switch_to_alert()

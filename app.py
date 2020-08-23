@@ -44,8 +44,8 @@ def crawlingTmoneyBusEveryDay():
 
 
 # 매일 자정 크롤링
-sched.add_job(crawlingKobusEveryDay, 'cron', minute="34", second="0", hour="20",id="kobusCrawlingJob")
-sched.add_job(crawlingTmoneyBusEveryDay, 'cron', minute="34", second="0", hour="20", id="tmoneybusCrawlingJob")
+sched.add_job(crawlingKobusEveryDay, 'cron', minute="0", second="0", hour="0",id="kobusCrawlingJob")
+sched.add_job(crawlingTmoneyBusEveryDay, 'cron', minute="0", second="0", hour="0", id="tmoneybusCrawlingJob")
 
 
 # bus tmoneyData parsing module.
