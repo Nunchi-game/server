@@ -2,6 +2,7 @@ import decimal
 
 from flask import Flask
 from flask import request
+import requests
 import json
 import kobus_crawling
 import tmoney_crawling
@@ -129,7 +130,6 @@ def groupByRegion(database):
         # cursor.execute(query)
         data = cursor.fetchall()
         data = list(data)
-        #data = json.dumps(cursor.fetchall(), cls=DecimalEncoder)
         conn.commit()
         cursor.close()
         return data
@@ -137,6 +137,15 @@ def groupByRegion(database):
         conn.commit()
         cursor.close()
         print(e)
+
+@app.route('/api/car', methods=['GET'])
+def getCarAPI():
+    key = "6564658525"
+    stationCode = [ 13, 101, 127, 129, 133, 135, 140, 146, 150, 158, 159, 167, 174, 179, 181, 182, 183, 186, 187, 189, 190, 216, 227, 228, 244, 253,
+                   261, 270, 271, 272, 273, 275, 276, 294, 509, 510, 515, 516, 517, 519, 553, 554, 556, 557, 569, 580, 581, 582, 584, 585, 590, 987 ]
+    carData = requests.get('http://data.ex.co.kr/openapi/trafficapi/trafficIc?key=test&type=json&tmType=1&inoutType=0&tcsType=1&carType=1&numOfRows=52&pageNo=1')
+    return {'StatusCode': '200', 'Message': 'Get bus result success', 'data': carData.json()}
+
 
 
 # bus tmoneyData 불러오기.
@@ -160,10 +169,11 @@ def getBusData():
                 busResult[data] += num
             else:
                 busResult[data] = num
+        print(busResult)
 
-        busResult = json.dumps(busResult, cls=DecimalEncoder)
+        busResult = json.dumps(busResult, cls=DecimalEncoder, ensure_ascii=False)
 
-        return {'StatusCode': '200', 'Message': 'Get bus result success', 'data': busResult}
+        return {'StatusCode': '200', 'Message': 'Get bus result success', 'data': json.loads(busResult)}
     except Exception as e:
         print(e)
         return {'StatusCode': '400', 'Message': 'Get bus result fail'}
