@@ -127,7 +127,9 @@ def groupByRegion(database):
         cursor.execute(query, nowDate)
         # query = "SELECT total, city FROM kobus_result"
         # cursor.execute(query)
-        data = json.dumps(cursor.fetchall(), cls=DecimalEncoder)
+        data = cursor.fetchall()
+        data = list(data)
+        #data = json.dumps(cursor.fetchall(), cls=DecimalEncoder)
         conn.commit()
         cursor.close()
         return data
@@ -144,11 +146,26 @@ def getBusData():
         kobusData = groupByRegion('kobus_result')
         tmoneybusData = groupByRegion('tmoneybus_result')
         busResult = {}
-        for data in kobusData:
-            busResult.data[0]
+        for num, data in kobusData:
+            if(data in busResult.keys()):
+                # 이미 있는 값이면.
+                busResult[data] += num
+            else:
+                busResult[data] = num
 
-        return {'StatusCode': '200', 'Message': 'Get bus result success', 'data': kobusData}
-    except:
+
+        for num, data in tmoneybusData:
+            if (data in busResult.keys()):
+                # 이미 있는 값이면.
+                busResult[data] += num
+            else:
+                busResult[data] = num
+
+        busResult = json.dumps(busResult, cls=DecimalEncoder)
+
+        return {'StatusCode': '200', 'Message': 'Get bus result success', 'data': busResult}
+    except Exception as e:
+        print(e)
         return {'StatusCode': '400', 'Message': 'Get bus result fail'}
 
 '''
