@@ -5,6 +5,7 @@ import json
 import datetime
 import pandas as pd
 import os
+import logging
 
 #data frame MySQL insert.
 import pymysql
@@ -43,9 +44,9 @@ def main():
     with open('tmoneyTerminal/arrivalTerm.json', 'r', encoding='utf-8') as json_file:
         ariv_list = json.load(json_file)
     ###현재 일자 폴더명 생성
-    nowTime = datetime.datetime.now()
-    date = nowTime.strftime('%m%d')
-    directory = os.path.join(os.getcwd(), 'tmoney_data', 'tmoney'+date)
+    
+    #date = nowTime.strftime('%m%d')
+    #directory = os.path.join(os.getcwd(), 'tmoney_data', 'tmoney'+date)
     #print(directory)
     # -------------현재 날짜에 맞는 폴더 생성------------#
     # !!!!!!!!!!!!!!!!예외처리 해야됨 : 폴더명 중복, 파일 생성 오류 등등
@@ -111,10 +112,15 @@ def main():
             # time.sleep(2)
         ##-----도착지 반복문 ------##
     except Exception as e:
-        print(e)
+        nowTime = datetime.datetime.now()
+        date_time = nowTime.strftime("%m_%d_%Y_")
+        logging.basicConfig(filename='./'+date_time+'_tmoney.log', level=logging.WARNING)
+        logging.warning(e)
     finally:
         driver.close()
         driver.quit()
+        conn.close()
+        engine.dispose()
     #seatState.to_csv(directory + '/' + 'result.csv', encoding='utf-8')
 
     #dataframe to database
