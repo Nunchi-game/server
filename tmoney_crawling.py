@@ -114,7 +114,7 @@ def main():
     except Exception as e:
         nowTime = datetime.datetime.now()
         date_time = nowTime.strftime("%m_%d_%Y_")
-        logging.basicConfig(filename='./'+date_time+'_tmoney.log', level=logging.WARNING)
+        logging.basicConfig(filename='./log'+date_time+'_tmoney.log', level=logging.WARNING)
         logging.warning(e)
     finally:
         driver.close()

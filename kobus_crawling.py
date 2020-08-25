@@ -154,7 +154,7 @@ def main():
     except Exception as e:
         nowTime = datetime.datetime.now()
         date_time = nowTime.strftime("%m_%d_%Y")
-        logging.basicConfig(filename='./'+date_time+'_kobus.log', level=logging.WARNING)
+        logging.basicConfig(filename='./log/'+date_time+'_kobus.log', level=logging.WARNING)
         logging.warning(e)
     finally:
         driver.close()
