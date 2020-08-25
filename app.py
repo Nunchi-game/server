@@ -10,6 +10,7 @@ import pymysql
 import logging
 import sys
 from datetime import datetime
+import interchangeList
 from decimal import Decimal
 
 from apscheduler.schedulers.background import BackgroundScheduler
@@ -146,7 +147,31 @@ def getCarAPI():
     stationCode = [ 13, 101, 127, 129, 133, 135, 140, 146, 150, 158, 159, 167, 174, 179, 181, 182, 183, 186, 187, 189, 190, 216, 227, 228, 244, 253,
                    261, 270, 271, 272, 273, 275, 276, 294, 509, 510, 515, 516, 517, 519, 553, 554, 556, 557, 569, 580, 581, 582, 584, 585, 590, 987 ]
     carData = requests.get('http://data.ex.co.kr/openapi/trafficapi/trafficIc?key=test&type=json&tmType=1&inoutType=0&tcsType=1&carType=1&numOfRows=52&pageNo=1')
-    return {'StatusCode': '200', 'Message': 'Get bus result success', 'data': carData.json()}
+    carData = json.loads(carData.text)
+    carData = carData["trafficIc"]
+    with open('interchange_temp.json', encoding='utf8') as interchangeJson:
+        result = json.load(interchangeJson)
+        print(type(result))
+        for data in carData:
+            for interchange, city in interchangeList.selectedGates.items():
+                if data["unitName"] == interchange:
+                    if city in result["city"]:
+                        # json file에는 city 별로...
+                        # json file에 해당 city 있는 경우 amount 더하기
+                        continue
+                    else:
+                        # json file에 해당 city 없는 경우 추가
+                        temp = {}
+                        temp["station_code"] = int(data["unitCode"])
+                        temp["station_name"] = data["unitName"]
+                        temp["car"] = data["trafficAmout"]
+                        temp["bus"] = 0
+                        temp["city"] = city
+                else:
+                    continue
+
+
+    return {'StatusCode': '200', 'Message': 'Get bus result success', 'data': carData}
 
 
 
