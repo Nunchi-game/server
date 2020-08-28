@@ -1,0 +1,5 @@
+WARNING:root:Message: no such element: Unable to locate element: {"method":"css selector","selector":"div.bus_time p:nth-of-type(25) span.start_time"}
+  (Session info: headless chrome=84.0.4147.125)
+
+WARNING:root:[Errno 5] Input/output error
+WARNING:root:[Errno 5] Input/output error

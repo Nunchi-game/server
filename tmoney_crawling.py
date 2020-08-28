@@ -30,7 +30,7 @@ def main():
         logging.error("cannot connect database")
         sys.exit(1)
 
-    print("tbus start!!!!")
+    #print("tbus start!!!!")
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     options.add_argument("--window-size=1920,1080")
@@ -74,11 +74,11 @@ def main():
                 time.sleep(3)
                 addDeptTrmlInfo = 'addTrmlInfo("01", "' + dept_term['trml_Nm'] + '", "' + dept_term[
                     'trml_Cd'] + '")'  ##출발지 선택 javascript 함수
-                print('출발 터미널 : ' + dept_term['trml_Nm'])
+                #print('출발 터미널 : ' + dept_term['trml_Nm'])
                 driver.execute_script(addDeptTrmlInfo)
                 try:  # 경고창이 뜨는 지 확인
                     alert = driver.switch_to_alert()
-                    alert.accept()  # 경고창 확인 누르기
+                    alert.accept()  # 경고창 확인 누르기\
                 except:
                     "There is not alert"
                 # time.sleep(1)
@@ -108,13 +108,15 @@ def main():
             new_terminal_row = pd.Series([ariv_term['trml_Nm'], total, left, total - left, ariv_term['city']],
                                          index=columnNames)  # [터미널, 전체좌석, 예약좌석, 잔여좌석]
             seatState = seatState.append(new_terminal_row, ignore_index=True)
-            print(ariv_term['trml_Nm'] + 'is finished')
+            #print(ariv_term['trml_Nm'] + 'is finished')
             # time.sleep(2)
         ##-----도착지 반복문 ------##
+        seatState.to_sql(name="tmoneybus_result", con=engine, if_exists='append', index=False)
     except Exception as e:
         nowTime = datetime.datetime.now()
-        date_time = nowTime.strftime("%m_%d_%Y_")
-        logging.basicConfig(filename='./log'+date_time+'_tmoney.log', level=logging.WARNING)
+        date_time = nowTime.strftime("%Y_%m_%d_%H_%M_%S")
+        logging.basicConfig(filename='./log/tmoney'+date_time+'.log', level=logging.WARNING)
+        logging.warning('tmoney')
         logging.warning(e)
     finally:
         driver.close()
@@ -124,8 +126,8 @@ def main():
     #seatState.to_csv(directory + '/' + 'result.csv', encoding='utf-8')
 
     #dataframe to database
-    seatState.to_sql(name="tmoneybus_result", con=engine, if_exists='append', index=False)
-
+    
+    #seatState.to_sql(name="tmoneybus_result", con=engine, if_exists='append', index=False)
     #with open(directory + '/' + 'api_result.json', 'w', encoding='utf-8') as api_result:
     #   seatState.to_json(api_result, orient='table', force_ascii=False)
     conn.close()
