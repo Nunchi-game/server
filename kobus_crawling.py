@@ -183,7 +183,7 @@ def main():
 
     #print(resultTable)
     # resultTable dataframe to database
-    resultTable.to_sql(name="kobus_result", con=engine,if_exists='append', index=False)
+    #resultTable.to_sql(name="kobus_result", con=engine,if_exists='append', index=False)
     
     conn.close()
     engine.dispose()

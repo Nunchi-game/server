@@ -48,8 +48,8 @@ start_hour = "11"
 start_minute = "44"
 start_second = "0"
 # 매일 자정 크롤링
-sched.add_job(crawlingKobusEveryDay, 'cron', minute="23", second="0", hour="0",id="kobusCrawlingJob")
-sched.add_job(crawlingTmoneyBusEveryDay, 'cron', minute="23", second="0", hour="0", id="tmoneybusCrawlingJob")
+sched.add_job(crawlingKobusEveryDay, 'cron', minute="0", second="0", hour="0",id="kobusCrawlingJob")
+sched.add_job(crawlingTmoneyBusEveryDay, 'cron', minute="0", second="0", hour="0", id="tmoneybusCrawlingJob")
 
 
 # bus tmoneyData parsing module.
