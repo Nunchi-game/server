@@ -61,3 +61,7 @@ selectedGates = {
     '군산' : '군산',
     '동군산' : '군산'
 }
+
+arrivalList = ["seoul", "yangpyeong", "daegu", "busan", "changwon", "tongyeong", "hoengseong", "hongcheon", "pyeongchang",
+                       "gangneung", "yangyang", "sokcho", "chuncheon", "gwangyang", "gwangju", "suncheon", "mokpo", "gyeongju",
+                       "jeonju", "gunsan"]
