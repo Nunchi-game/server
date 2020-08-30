@@ -1,8 +1,5 @@
 import decimal
-import csv
 from flask import Flask
-from flask import request
-import requests
 import json
 import kobus_crawling
 import tmoney_crawling
@@ -12,8 +9,7 @@ import sys
 from datetime import datetime
 import interchangeList
 import pandas as pd
-from decimal import Decimal
-from sqlalchemy import create_engine, types
+from sqlalchemy import create_engine
 
 from apscheduler.schedulers.background import BackgroundScheduler
 
@@ -213,7 +209,7 @@ def dataframeToDatabase():
         conn.close()
         print(e)
 
-# get training set from database.
+# get training set from database. for machine learning.
 def getTrainingSet():
     try:
         engine = create_engine(
@@ -231,7 +227,7 @@ def getTrainingSet():
             query = "SELECT * FROM {}".format(interchangeList.arrivalList[i])
             result = conn.execute(query)
             rows = result.fetchall()
-            globals()[interchangeList.arrivalList[i]] = pd.DataFrame(rows,columns=['data', 'station_code', 'station_name', 'car' ,'bus', 'city'])
+            globals()[interchangeList.arrivalList[i]] = pd.DataFrame(rows, columns=['data', 'station_code', 'station_name', 'car' ,'bus', 'city'])
             dataFrameList.append(globals()[interchangeList.arrivalList[i]])
         conn.close()
 
@@ -242,9 +238,11 @@ def getTrainingSet():
 
 @app.route('/api/car', methods=['GET'])
 def getCarData():
-
-    a = getTrainingSet()
-    print(a)
+    '''
+        그 전에 machine learning code 마지막에 database코드 필요.
+        get forcast information from database
+        
+    '''
 
     return {'StatusCode': '200', 'Message': 'Get bus result success'}
 
@@ -266,7 +264,7 @@ def getBusData():
 
 
         for num, data in tmoneybusData:
-            if (data in busResult.keys()):
+            if data in busResult.keys():
                 # 이미 있는 값이면.
                 busResult[data] += num
             else:
@@ -279,12 +277,6 @@ def getBusData():
     except Exception as e:
         print(e)
         return {'StatusCode': '400', 'Message': 'Get bus result fail'}
-
-'''
-# car tmoneyData 불러오기.
-@app.route('/api/car', methods = ['GET'])
-def getCarData():
-'''
 
 
 if __name__ == '__main__':
