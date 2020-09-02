@@ -42,7 +42,7 @@ def main():
         logging.error("cannot connect database")
         sys.exit(1)
 
-    print("kobus start!!!")
+    #print("kobus start!!!")
     ###출발지,도착지,region 불러오기
     with open('./kobusTerminal/departures.json', 'r', encoding='utf-8') as json_file:
         departures = json.load(json_file)
@@ -80,11 +80,12 @@ def main():
             arvlCode = arrivals[arrival]
             fnArvlChc = 'fnArvlChc("'+arvlCode+'","' + arrival + '" ,"' '" ,"' '","' '", "00")'
             ###크롤링 데이터 넣을 데이터프레임 생성
+            #print("Arival :" + arrival)
             timeTable = pd.DataFrame(columns=['time', 'departure', 'arrival', 'remain_seat', 'total_seat', 'company', 'grade'])
 
             #---------------출발지 반복문 시작------------#
             for key, value in departures.items():
-                print("kobus new departure start!")
+                #print("kobus new departure start!")
                 ###크롬 드라이버 실행,페이지 불러옴
                 driver = webdriver.Chrome("./chromedriver", options=webdriver_options)
                 driver.implicitly_wait(10) # seconds
@@ -92,29 +93,38 @@ def main():
 
                 #코드 실행해서 출발지, 목적지 선택
                 fnDeprChc = 'fnDeprChc("' + value + '","' + key + '")'
-                print(fnDeprChc)
-                print(fnArvlChc)
                 driver.execute_script(fnDeprChc)
                 driver.execute_script(fnArvlChc)
-
+                #print('Depart : ' + key)
                 #조회하기 선택.
                 selectSearch = driver.find_element_by_css_selector("p.check")
                 selectSearch.click()
+                time.sleep(1)
+                try:  # 경고창이 뜨는 지 확인 (노선이 없을 때)
+                    alert = driver.switch_to_alert()
+                    alert.accept()  # 경고창 확인 누르기
+                    continue
+                except:
+                    "There is not alert"
+                time.sleep(1)
 
                 # 전체 배차표에서 출발시각, 고속사, 등급, 잔여석, 총좌석 크롤링
                 stage = 1
                 while True:
-                    # 출발시각
-                    getStartTime = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.start_time")
-                    # 고속사
-                    getCompany = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.bus_com")
-                    # 등급
-                    getGrade = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.grade")
-                    # 잔여석(전처리 해야 함)
-                    getRemainSeats = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.remain")
-                    # 총좌석
-                    getTotalSeats = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.remain span.total_seat")
-                        
+                    try:
+                        # 출발시각
+                        getStartTime = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.start_time")
+                        # 고속사
+                        getCompany = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.bus_com")
+                        # 등급
+                        getGrade = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.grade")
+                        # 잔여석(전처리 해야 함)
+                        getRemainSeats = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.remain")
+                        # 총좌석
+                        getTotalSeats = driver.find_element_by_css_selector("div.bus_time p:nth-of-type("+str(stage)+") span.remain span.total_seat")
+                    except:
+                        driver.close()
+                        break
                     # 잔여석 전처리.
                     modifyRemainSeats = getRemainSeats.text
                     for i in range(len(modifyRemainSeats)):
@@ -130,44 +140,51 @@ def main():
                             break
                     modifyTotalSeats = modifyTotalSeats[index:]
                     ##########여기까지 한 row 완성#############
-                #데이터프레임에 넣는 과정
-                new_row = pd.Series([DepartureTime(getStartTime.text).__str__(), key, arrival, modifyRemainSeats, modifyTotalSeats,
-                                     getCompany.text, getGrade.text], index=['time', 'departure', 'arrival', 'remain_seat', 'total_seat', 'company', 'grade'])
-                timeTable = timeTable.append(new_row, ignore_index=True)
-                stage += 1
+                    #데이터프레임에 넣는 과정
+                    new_row = pd.Series([DepartureTime(getStartTime.text).__str__(), key, arrival, modifyRemainSeats, modifyTotalSeats,
+                                         getCompany.text, getGrade.text], index=['time', 'departure', 'arrival', 'remain_seat', 'total_seat', 'company', 'grade'])
+                    timeTable = timeTable.append(new_row, ignore_index=True)
+                    stage += 1
             #---------------출발지 반복문 종료------------#
         #---------------문자형 column numeric으로 변경------------#
-        timeTable['total_seat'] = pd.to_numeric(timeTable['total_seat'])
-        timeTable['remain_seat'] = pd.to_numeric(timeTable['remain_seat'])
-        #csvName = arrival+date+'.csv'
-        #timeTable.to_csv('./kobus_data/'+fileName+'/'+csvName,encoding='utf-8')
-        #---------------json파일 저장을 위한 전처리, json------------#
-        result_total = timeTable['total_seat'].sum()
-        result_remain = timeTable['remain_seat'].sum()
-        result_reserved = result_total - result_remain
-        result_region = regions[arrival]
-        new_result = pd.Series([arrival, result_total, result_remain, result_reserved, result_region], index=[
-                               'arrival', 'total', 'remain', 'reserved', 'city'])
-        resultTable = resultTable.append(new_result, ignore_index=True)
+            timeTable['total_seat'] = pd.to_numeric(timeTable['total_seat'])
+            timeTable['remain_seat'] = pd.to_numeric(timeTable['remain_seat'])
+            #csvName = arrival+date+'.csv'
+            #timeTable.to_csv('./kobus_data/'+fileName+'/'+csvName,encoding='utf-8')
+            #---------------json파일 저장을 위한 전처리, json------------#
+            result_total = timeTable['total_seat'].sum()
+            result_remain = timeTable['remain_seat'].sum()
+            result_reserved = result_total - result_remain
+            result_region = regions[arrival]
+            new_result = pd.Series([arrival, result_total, result_remain, result_reserved, result_region], index=[
+                                'arrival', 'total', 'remain', 'reserved', 'city'])
+            resultTable = resultTable.append(new_result, ignore_index=True)
         #출발지 반복문 하나씩 돌 때마다 resultTable에 row 하나씩 추가해야 한다.근데 이거 이렇게 해야되나?
+        #print(resultTable)
+        # resultTable dataframe to database
+        resultTable.to_sql(name="kobus_result", con=engine,if_exists='append', index=False)
     except Exception as e:
         nowTime = datetime.datetime.now()
-        date_time = nowTime.strftime("%m_%d_%Y")
-        logging.basicConfig(filename='./log/'+date_time+'_kobus.log', level=logging.WARNING)
+        date_time = nowTime.strftime("%Y_%m_%d_%H_%M_%S")
+        logging.basicConfig(filename='./log/kobus'+date_time+'.log', level=logging.WARNING)
+        logging.warning('kobus')
         logging.warning(e)
     finally:
         driver.close()
         driver.quit()
         conn.close()
         engine.dispose()
-
-    # resultTable dataframe to database
-    resultTable.to_sql(name="kobus_result", con=engine,if_exists='append', index=False)
+    
     #sys.exit(1)
     #이중 반복문 탈출한 뒤 result.json 저장하기
 #    resultName = 'result'+date+'.json'
 #    with open('./kobus_data/'+fileName+'/'+resultName, 'w', encoding='utf-8') as file:
 #        resultTable.to_json(file, orient='table', force_ascii=False)
+
+    #print(resultTable)
+    # resultTable dataframe to database
+    #resultTable.to_sql(name="kobus_result", con=engine,if_exists='append', index=False)
+    
     conn.close()
     engine.dispose()
 
