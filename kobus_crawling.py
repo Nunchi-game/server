@@ -87,8 +87,8 @@ def main():
                 print("kobus new departure start!")
                 ###크롬 드라이버 실행,페이지 불러옴
                 driver = webdriver.Chrome("./chromedriver", options=webdriver_options)
+                driver.implicitly_wait(10) # seconds
                 driver.get("https://www.kobus.co.kr/oprninf/alcninqr/oprnAlcnPage.do")
-                time.sleep(3)
 
                 #코드 실행해서 출발지, 목적지 선택
                 fnDeprChc = 'fnDeprChc("' + value + '","' + key + '")'
@@ -100,7 +100,6 @@ def main():
                 #조회하기 선택.
                 selectSearch = driver.find_element_by_css_selector("p.check")
                 selectSearch.click()
-                time.sleep(2)
 
                 # 전체 배차표에서 출발시각, 고속사, 등급, 잔여석, 총좌석 크롤링
                 stage = 1
