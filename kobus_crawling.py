@@ -88,8 +88,8 @@ def main():
                 #print("kobus new departure start!")
                 ###크롬 드라이버 실행,페이지 불러옴
                 driver = webdriver.Chrome("./chromedriver", options=webdriver_options)
+                driver.implicitly_wait(10) # seconds
                 driver.get("https://www.kobus.co.kr/oprninf/alcninqr/oprnAlcnPage.do")
-                time.sleep(3)
 
                 #코드 실행해서 출발지, 목적지 선택
                 fnDeprChc = 'fnDeprChc("' + value + '","' + key + '")'

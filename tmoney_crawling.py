@@ -81,7 +81,7 @@ def main():
                     alert.accept()  # 경고창 확인 누르기\
                 except:
                     "There is not alert"
-                # time.sleep(1)
+                time.sleep(1)
                 driver.execute_script(addArivTrmlInfo)
                 try:  # 경고창이 뜨는 지 확인
                     alert = driver.switch_to_alert()
