@@ -44,15 +44,15 @@ def main():
 
     #print("kobus start!!!")
     ###출발지,도착지,region 불러오기
-    with open('./kobusTerminal/departures.json', 'r', encoding='utf-8') as json_file:
+    path = os.path.dirname(os.path.abspath(__file__))
+    with open(path + '/../kobusTerminal/departures.json', 'r', encoding='utf-8') as json_file:
         departures = json.load(json_file)
 
-    with open('./kobusTerminal/arrivals.json', 'r', encoding='utf-8') as json_file:
+    with open(path + '/../kobusTerminal/arrivals.json', 'r', encoding='utf-8') as json_file:
         arrivals = json.load(json_file)
 
-    with open('./kobusTerminal/regions.json', 'r', encoding='utf-8') as json_file:
+    with open(path + '/../kobusTerminal/regions.json', 'r', encoding='utf-8') as json_file:
         regions = json.load(json_file)
-
     ###현재 일자 폴더명 생성(%H지움)
     # nowTime = datetime.datetime.now()
     # date = nowTime.strftime('%m%d')
@@ -77,6 +77,7 @@ def main():
     #---------------도착지 반복문 시작------------#
     try:
         for arrival in arrivals:
+            print("STart kobus")
             arvlCode = arrivals[arrival]
             fnArvlChc = 'fnArvlChc("'+arvlCode+'","' + arrival + '" ,"' '" ,"' '","' '", "00")'
             ###크롤링 데이터 넣을 데이터프레임 생성
@@ -87,7 +88,8 @@ def main():
             for key, value in departures.items():
                 #print("kobus new departure start!")
                 ###크롬 드라이버 실행,페이지 불러옴
-                driver = webdriver.Chrome("./chromedriver", options=webdriver_options)
+                chromePath = os.path.join(path, "../chromedriver")
+                driver = webdriver.Chrome(chromePath, options=webdriver_options)
                 driver.implicitly_wait(10) # seconds
                 driver.get("https://www.kobus.co.kr/oprninf/alcninqr/oprnAlcnPage.do")
 
@@ -162,7 +164,7 @@ def main():
         #출발지 반복문 하나씩 돌 때마다 resultTable에 row 하나씩 추가해야 한다.근데 이거 이렇게 해야되나?
         #print(resultTable)
         # resultTable dataframe to database
-        resultTable.to_sql(name="kobus_result", con=engine,if_exists='append', index=False)
+        #resultTable.to_sql(name="kobus_result", con=engine,if_exists='append', index=False)
     except Exception as e:
         nowTime = datetime.datetime.now()
         date_time = nowTime.strftime("%Y_%m_%d_%H_%M_%S")
@@ -183,7 +185,7 @@ def main():
 
     #print(resultTable)
     # resultTable dataframe to database
-    #resultTable.to_sql(name="kobus_result", con=engine,if_exists='append', index=False)
+    resultTable.to_sql(name="kobus_result", con=engine,if_exists='append', index=False)
     
     conn.close()
     engine.dispose()

@@ -30,18 +30,20 @@ def main():
         logging.error("cannot connect database")
         sys.exit(1)
 
+    path = os.path.dirname(os.path.abspath(__file__))
+    chromePath = os.path.join(path, "../chromedriver")
     #print("tbus start!!!!")
     options = webdriver.ChromeOptions()
     options.add_argument('headless')
     options.add_argument("--window-size=1920,1080")
     options.add_argument('--no-sandbox')
-    driver = webdriver.Chrome('./chromedriver', chrome_options=options)
+    driver = webdriver.Chrome(chromePath, chrome_options=options)
 
     # dept_list = [{"trml_Cd": "0511601", "trml_Nm": "동서울", "region" : "수도권"}]
     #ariv_list = [{"trml_Cd": "4773401", "trml_Nm": "부산동래", "region": "경남"}]
-    with open('tmoneyTerminal/departTerm.json', 'r', encoding='utf-8') as json_file:
+    with open(path + '/../tmoneyTerminal/departTerm.json', 'r', encoding='utf-8') as json_file:
         dept_list = json.load(json_file)
-    with open('tmoneyTerminal/arrivalTerm.json', 'r', encoding='utf-8') as json_file:
+    with open(path + '/../tmoneyTerminal/arrivalTerm.json', 'r', encoding='utf-8') as json_file:
         ariv_list = json.load(json_file)
     ###현재 일자 폴더명 생성
     

@@ -1,8 +1,7 @@
 import decimal
 from flask import Flask
 import json
-import kobus_crawling
-import tmoney_crawling
+from crawling import kobus_crawling, tmoney_crawling, tollgate_for_day
 import controller.bus as busController
 import controller.car as carController
 
@@ -41,6 +40,9 @@ def crawlingTmoneyBusEveryDay():
 sched.add_job(crawlingKobusEveryDay, 'cron', minute="0", second="0", hour="0",id="kobusCrawlingJob")
 sched.add_job(crawlingTmoneyBusEveryDay, 'cron', minute="0", second="0", hour="0", id="tmoneybusCrawlingJob")
 
+#df = tollgate_for_day.main()
+#carController.dataframeToDatabase(df)
+
 @app.route('/api/represent', methods=['POST'])
 def getRepresent():
     '''
@@ -50,6 +52,7 @@ def getRepresent():
 
 @app.route('/api/car', methods=['GET'])
 def getCarData():
+
     '''
         그 전에 machine learning code 마지막에 database코드 필요.
         get forecast information from database

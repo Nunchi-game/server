@@ -3,9 +3,10 @@ import sys
 import interchangeList
 import pandas as pd
 from sqlalchemy import create_engine
+import os.path
 
 # post data to database by city.
-def dataframeToDatabase():
+def dataframeToDatabase(data):
     try:
         engine = create_engine(
             "mysql+mysqldb://root:nunchi@220.67.128.71:3306/nunchi",
@@ -17,7 +18,7 @@ def dataframeToDatabase():
         sys.exit(1)
 
     try:
-        result = pd.read_csv('final_total.csv', sep=',', encoding='utf8')
+        result = data
 
         isSeoul = result['city'] == '서울'
         seoul = result[isSeoul]

@@ -16,7 +16,7 @@ webdriver_options = webdriver.ChromeOptions()
 webdriver_options.add_argument('headless')
 webdriver_options.add_argument('--no-sandbox')
 
-driver = webdriver.Chrome("./chromedriver", options=webdriver_options)
+driver = webdriver.Chrome("../chromedriver", options=webdriver_options)
 driver.implicitly_wait(10) # seconds
 driver.get("https://korean.visitkorea.or.kr/detail/rem_detail.do?cotid=351f6cf4-d984-496f-886d-6fc538b226a7")
 

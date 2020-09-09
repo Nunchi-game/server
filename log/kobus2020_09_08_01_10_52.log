@@ -1,0 +1,4 @@
+WARNING:root:kobus
+WARNING:root:Message: 'chromedriver' executable needs to be in PATH. Please see https://sites.google.com/a/chromium.org/chromedriver/home
+
+INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
