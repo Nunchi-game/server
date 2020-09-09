@@ -9,16 +9,17 @@ import datetime
 
 def main():
   my_path = os.path.abspath(os.path.dirname(__file__))
-  path = os.path.join(my_path, "../carDataZip/")
-
+  path = os.path.join(my_path, "./../carDataZip/")
   #크롬드라이버 옵션
+
   options = webdriver.ChromeOptions()
-  webdriver_options = webdriver.ChromeOptions()
+  options.add_argument("headless")
   options.add_experimental_option("prefs", {
-    "download.default_directory": path,
+    "download.default_directory": r"/Users/yb/PycharmProjects/server/carDataZip",
     "download.prompt_for_download": False,
     "download.directory_upgrade": True,
-    "safebrowsing.enabled": False #안전 다운로드 기능 비활성화
+    "safebrowsing.enabled": False, #안전 다운로드 기능 비활성화
+    'safebrowsing.disable_download_protection': True
   })
 
   ######################웹드라이버 접속,다운받기#########################
@@ -36,11 +37,11 @@ def main():
 
   search_buttion = driver.find_element_by_css_selector("#fileDownload")
   search_buttion.click()
-  time.sleep(30)
+  time.sleep(10)
 
   driver.close
 
-  time.sleep(10)
+  time.sleep(5)
   ######################다운 받은 파일 열고, 압축 해제하기########################
   #날짜가 어긋날 수 있으므로 오류처리 해 주도록 하자
 
@@ -69,7 +70,7 @@ def main():
   df.replace({'station_code': '13'}, {'station_code': '013'}, inplace=True)
 
   df = df[['date', 'station_code', 'station_name', 'car', 'bus', 'city']]
-  print(df)
+  return df
 
 if __name__ == '__main__':
     main()

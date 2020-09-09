@@ -36,12 +36,18 @@ def crawlingTmoneyBusEveryDay():
     except Exception as ex:
         print(ex)
 
+def crawlingCarEveryDay():
+    try:
+        df = tollgate_for_day.main()
+        carController.dataframeToDatabase(df)
+    except Exception as ex:
+        print(ex)
+
 # 매일 자정 크롤링
 sched.add_job(crawlingKobusEveryDay, 'cron', minute="0", second="0", hour="0",id="kobusCrawlingJob")
 sched.add_job(crawlingTmoneyBusEveryDay, 'cron', minute="0", second="0", hour="0", id="tmoneybusCrawlingJob")
+sched.add_job(crawlingCarEveryDay, 'cron', minute="0", second="0", hour = "14", id="carCrawlingJob")
 
-#df = tollgate_for_day.main()
-#carController.dataframeToDatabase(df)
 
 @app.route('/api/represent', methods=['POST'])
 def getRepresent():
